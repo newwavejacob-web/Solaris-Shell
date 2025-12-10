@@ -1,0 +1,45 @@
+# Build artifacts
+build/
+bin/
+*.o
+*.d
+*.out
+*.a
+*.so
+*.dylib
+
+# Executables
+conch
+c
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Core dumps
+core
+core.*
+vgcore.*
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+
+# Valgrind output
+valgrind-out.txt
+
+# Compiled binaries
+a.out
+
+# Backup files
+*.bak
+*.backup
