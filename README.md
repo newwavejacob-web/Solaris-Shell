@@ -21,10 +21,12 @@
 
 ### Core Functionality
 - **Full POSIX Compliance** - Execute any standard Unix command
-- **Built-in Commands** - `cd`, `help`, `exit`, `clear`, `status`
+- **Built-in Commands** - `cd`, `help`, `exit`, `clear`, `status`, `jobs`, `fg`, `bg`, `export`
 - **I/O Redirection** - Output (`>`, `>>`), Input (`<`)
 - **Piping** - Chain commands with `|`
 - **Quote Handling** - Properly parse single and double quotes
+- **Job Control** - Background processes with `&`, `fg`, `bg`, and `jobs`
+- **Environment Variables** - Set and export variables with `export`
 
 ### Advanced Features
 - **Command History** - 100-command circular buffer with arrow key navigation
@@ -53,7 +55,8 @@ conch/
 │   ├── builtins.c         # Built-in command implementations
 │   ├── pipe.c             # Pipe handling
 │   ├── history.c          # Command history management
-│   └── completion.c       # Tab completion engine
+│   ├── completion.c       # Tab completion engine
+│   └── jobs.c             # Job control and background processes
 ├── include/               # Header files
 │   ├── common.h           # Shared definitions and constants
 │   ├── prompt.h
@@ -62,7 +65,8 @@ conch/
 │   ├── builtins.h
 │   ├── pipe.h
 │   ├── history.h
-│   └── completion.h
+│   ├── completion.h
+│   └── jobs.h
 ├── build/                 # Build artifacts (generated)
 ├── bin/                   # Compiled binaries (generated)
 ├── docs/                  # Documentation
@@ -201,6 +205,18 @@ clear
 
 # Exit the shell
 exit
+
+# Set environment variable
+export VAR=value
+
+# List background jobs
+jobs
+
+# Bring job to foreground
+fg %1
+
+# Resume job in background
+bg %1
 ```
 
 ### I/O Redirection
@@ -253,6 +269,35 @@ cd "My Documents"
 cat "file with spaces.txt"
 ```
 
+### Job Control
+
+```bash
+# Run command in background
+sleep 100 &
+
+# List all jobs
+jobs
+
+# Bring job #1 to foreground
+fg %1
+
+# Resume stopped job #1 in background
+bg %1
+
+# Suspend current foreground job
+Ctrl+Z
+```
+
+### Environment Variables
+
+```bash
+# Set and export a variable
+export MY_VAR=hello
+
+# Use in commands
+echo $MY_VAR
+```
+
 ---
 
 ## 🎨 Customization
@@ -295,7 +340,7 @@ Adjust the history buffer size in `include/history.h`:
 
 ### Architecture
 
-**Modular Design**: The codebase is organized into 8 functional modules:
+**Modular Design**: The codebase is organized into 9 functional modules:
 1. **Main** - REPL loop and initialization
 2. **Prompt** - UI and boot sequence
 3. **Parser** - Lexical analysis and tokenization
@@ -304,6 +349,7 @@ Adjust the history buffer size in `include/history.h`:
 6. **Pipe** - Inter-process communication
 7. **History** - Command history buffer
 8. **Completion** - Tab completion logic
+9. **Jobs** - Job control and background process management
 
 ### Key Technologies
 
@@ -410,9 +456,9 @@ make stats
 ```
 
 Current codebase:
-- ~1500 lines of C code
-- 8 modules
-- 8 header files
+- ~2000 lines of C code
+- 9 modules
+- 9 header files
 - 100% memory safe
 - Zero dependencies (pure POSIX)
 
@@ -420,8 +466,8 @@ Current codebase:
 
 ## 🔮 Future Enhancements
 
-- [ ] Job control (background processes with `&`)
-- [ ] Environment variable expansion (`$VAR`)
+- [x] Job control (background processes with `&`)
+- [x] Environment variable expansion (`$VAR`)
 - [ ] Alias support
 - [ ] Script execution mode
 - [ ] Configuration file (~/.conchrc)

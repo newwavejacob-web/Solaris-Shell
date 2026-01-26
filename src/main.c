@@ -4,6 +4,7 @@
 #include "../include/executor.h"
 #include "../include/history.h"
 #include "../include/completion.h"
+#include "../include/jobs.h"
 #include <termios.h>
 #include <ctype.h>
 
@@ -197,6 +198,7 @@ int main(void) {
     int status = 1;
 
     // Initialize systems
+    jobs_init();
     history_init();
     completion_init();
 
@@ -217,9 +219,15 @@ int main(void) {
 
         if (strlen(line) > 0) {
             history_add(line);
-            args = split_line(line);
-            status = execute_command(args);
-            free(args);
+
+            // Expand environment variables
+            char *expanded = expand_variables(line);
+            if (expanded) {
+                args = split_line(expanded);
+                status = execute_command(args);
+                free(args);
+                free(expanded);
+            }
         }
 
         free(line);

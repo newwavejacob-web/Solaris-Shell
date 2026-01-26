@@ -7,4 +7,7 @@ char *read_line(void);
 // Split line into tokens, handling quotes
 char **split_line(char *line);
 
+// Expand environment variables ($VAR and ${VAR})
+char *expand_variables(const char *input);
+
 #endif // PARSER_H

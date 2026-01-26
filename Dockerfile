@@ -24,4 +24,4 @@ ENTRYPOINT ["./bin/conch"]
 # Add metadata
 LABEL maintainer="SOLARIS"
 LABEL description="Conch - N3WL1N3 Terminal Shell"
-LABEL version="2.0"
+LABEL version="3.0"

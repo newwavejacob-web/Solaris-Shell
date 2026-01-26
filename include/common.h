@@ -8,6 +8,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <time.h>
+#include <signal.h>
+#include <errno.h>
 
 // Buffer sizes
 #define BUFFER_SIZE 1024

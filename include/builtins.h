@@ -17,4 +17,12 @@ int builtin_exit(char **args);
 int builtin_clear(char **args);
 int builtin_status(char **args);
 
+// Job control built-ins
+int builtin_jobs(char **args);
+int builtin_fg(char **args);
+int builtin_bg(char **args);
+
+// Environment variable built-in
+int builtin_export(char **args);
+
 #endif // BUILTINS_H
