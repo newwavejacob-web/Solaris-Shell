@@ -4,7 +4,7 @@
 int pipe_cmd(char **args, int start, int end, int pipe_pos) {
     // Validate input parameters
     if (pipe_pos <= start || pipe_pos >= end - 1) {
-        fprintf(stderr, "TERMINAL: INVALID PIPE POSITION\n");
+        fprintf(stderr, "conch: INVALID PIPE POSITION\n");
         return 1;
     }
 
@@ -12,7 +12,7 @@ int pipe_cmd(char **args, int start, int end, int pipe_pos) {
     int cmd2_size = end - pipe_pos;
 
     if (cmd1_size <= 0 || cmd2_size <= 0) {
-        fprintf(stderr, "TERMINAL: INVALID COMMAND SIZE\n");
+        fprintf(stderr, "conch: INVALID COMMAND SIZE\n");
         return 1;
     }
 
@@ -20,7 +20,7 @@ int pipe_cmd(char **args, int start, int end, int pipe_pos) {
     char **cmd2 = malloc(sizeof(char*) * cmd2_size);
 
     if (!cmd1 || !cmd2) {
-        fprintf(stderr, "TERMINAL: MEMORY ALLOCATION FAILED\n");
+        fprintf(stderr, "conch: MEMORY ALLOCATION FAILED\n");
         if (cmd1) free(cmd1);
         if (cmd2) free(cmd2);
         return 1;
@@ -42,7 +42,7 @@ int pipe_cmd(char **args, int start, int end, int pipe_pos) {
 
     int pipefd[2];
     if (pipe(pipefd) == -1) {
-        perror("TERMINAL: PIPE");
+        perror("conch: PIPE");
         free(cmd1);
         free(cmd2);
         return 1;
@@ -53,17 +53,17 @@ int pipe_cmd(char **args, int start, int end, int pipe_pos) {
         // Child process 1 - write to pipe
         close(pipefd[0]);
         if (dup2(pipefd[1], STDOUT_FILENO) == -1) {
-            perror("TERMINAL: DUP2");
+            perror("conch: DUP2");
             exit(EXIT_FAILURE);
         }
         close(pipefd[1]);
 
         if (execvp(cmd1[0], cmd1) == -1) {
-            perror("TERMINAL: COMMAND 1 NOT FOUND");
+            perror("conch: COMMAND 1 NOT FOUND");
             exit(EXIT_FAILURE);
         }
     } else if (pid1 < 0) {
-        perror("TERMINAL: FORK 1");
+        perror("conch: FORK 1");
         close(pipefd[0]);
         close(pipefd[1]);
         free(cmd1);
@@ -76,17 +76,17 @@ int pipe_cmd(char **args, int start, int end, int pipe_pos) {
         // Child process 2 - read from pipe
         close(pipefd[1]);
         if (dup2(pipefd[0], STDIN_FILENO) == -1) {
-            perror("TERMINAL: DUP2");
+            perror("conch: DUP2");
             exit(EXIT_FAILURE);
         }
         close(pipefd[0]);
 
         if (execvp(cmd2[0], cmd2) == -1) {
-            perror("TERMINAL: COMMAND 2 NOT FOUND");
+            perror("conch: COMMAND 2 NOT FOUND");
             exit(EXIT_FAILURE);
         }
     } else if (pid2 < 0) {
-        perror("TERMINAL: FORK 2");
+        perror("conch: FORK 2");
         close(pipefd[0]);
         close(pipefd[1]);
         free(cmd1);

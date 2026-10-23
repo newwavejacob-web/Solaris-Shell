@@ -3,7 +3,7 @@
 
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -std=c11 -Iinclude
+CFLAGS = -Wall -Wextra -Werror -std=c11 -D_DEFAULT_SOURCE -Iinclude
 LDFLAGS =
 DEBUGFLAGS = -g -O0 -DDEBUG
 RELEASEFLAGS = -O2 -DNDEBUG
@@ -94,10 +94,21 @@ run: release
 	@echo "$(COLOR_CYAN)Starting $(TARGET)...$(COLOR_RESET)"
 	@./$(BIN_DIR)/$(TARGET)
 
-# Run with valgrind for memory leak detection
+# Run the test suite (pipes, redirects, builtins)
+.PHONY: test
+test: release
+	@echo "$(COLOR_CYAN)Running test suite...$(COLOR_RESET)"
+	tests/run_tests.sh $(BIN_DIR)/$(TARGET)
+
+# Run the test suite under valgrind --leak-check=full (Linux only)
 .PHONY: memcheck
 memcheck: debug
-	@echo "$(COLOR_CYAN)Running memory check with valgrind...$(COLOR_RESET)"
+	@echo "$(COLOR_CYAN)Running test suite under valgrind...$(COLOR_RESET)"
+	tests/run_tests.sh --valgrind $(BIN_DIR)/$(TARGET)
+
+# Run the shell interactively under valgrind
+.PHONY: memcheck-interactive
+memcheck-interactive: debug
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(TARGET)
 
 # Static analysis with cppcheck
@@ -139,7 +150,9 @@ help:
 	@echo "  $(COLOR_CYAN)install$(COLOR_RESET)   - Install to $(INSTALL_DIR)"
 	@echo "  $(COLOR_CYAN)uninstall$(COLOR_RESET) - Remove from $(INSTALL_DIR)"
 	@echo "  $(COLOR_CYAN)run$(COLOR_RESET)       - Build and run the shell"
-	@echo "  $(COLOR_CYAN)memcheck$(COLOR_RESET)  - Run with valgrind (requires valgrind)"
+	@echo "  $(COLOR_CYAN)test$(COLOR_RESET)      - Run the test suite"
+	@echo "  $(COLOR_CYAN)memcheck$(COLOR_RESET)  - Run the test suite under valgrind (requires valgrind)"
+	@echo "  $(COLOR_CYAN)memcheck-interactive$(COLOR_RESET) - Run the shell under valgrind"
 	@echo "  $(COLOR_CYAN)check$(COLOR_RESET)     - Run static analysis (requires cppcheck)"
 	@echo "  $(COLOR_CYAN)format$(COLOR_RESET)    - Format code (requires clang-format)"
 	@echo "  $(COLOR_CYAN)stats$(COLOR_RESET)     - Show code statistics"

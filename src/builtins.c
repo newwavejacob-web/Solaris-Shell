@@ -34,11 +34,11 @@ int num_builtins(void) {
 int builtin_cd(char **args) {
     if (args[1] == NULL) {
         if (chdir(getenv("HOME")) != 0) {
-            perror("TERMINAL: CD");
+            perror("conch: CD");
         }
     } else {
         if (chdir(args[1]) != 0) {
-            perror("TERMINAL: CD");
+            perror("conch: CD");
         }
     }
     return 1;
@@ -46,7 +46,7 @@ int builtin_cd(char **args) {
 
 int builtin_help(char **args) {
     (void)args;
-    printf(YELLOW "NEO TERMINAL HELP\n" RESET);
+    printf(YELLOW "CONCH HELP\n" RESET);
     printf("=============================\n");
     printf("Built-in commands:\n");
     for (int i = 0; i < num_builtins(); i++) {
@@ -77,7 +77,7 @@ int builtin_help(char **args) {
 
 int builtin_exit(char **args) {
     (void)args;
-    printf(GREEN "TERMINAL SESSION TERMINATED\n" RESET);
+    printf(GREEN "CONCH SESSION TERMINATED\n" RESET);
     printf("we do it because we are driven.\n");
     return 0;
 }
@@ -93,7 +93,7 @@ int builtin_status(char **args) {
     (void)args;
     char *cwd = getcwd(NULL, 0);
     printf(CYAN "SYSTEM STATUS: OPERATIONAL\n" RESET);
-    printf("NEO TERMINAL VERSION: 2.0\n");
+    printf("CONCH VERSION: " CONCH_VERSION "\n");
     printf("ACCESS: USER\n");
     if (cwd) {
         printf("CURRENT DIR: %s\n", cwd);
@@ -131,7 +131,7 @@ int builtin_fg(char **args) {
     }
 
     if (job == NULL) {
-        fprintf(stderr, "TERMINAL: fg: no such job\n");
+        fprintf(stderr, "conch: fg: no such job\n");
         return 1;
     }
 
@@ -163,12 +163,12 @@ int builtin_bg(char **args) {
     }
 
     if (job == NULL) {
-        fprintf(stderr, "TERMINAL: bg: no such job\n");
+        fprintf(stderr, "conch: bg: no such job\n");
         return 1;
     }
 
     if (job->state != JOB_STOPPED) {
-        fprintf(stderr, "TERMINAL: bg: job already running\n");
+        fprintf(stderr, "conch: bg: job already running\n");
         return 1;
     }
 
@@ -198,7 +198,7 @@ int builtin_export(char **args) {
             char *value = equals + 1;
 
             if (setenv(name, value, 1) != 0) {
-                perror("TERMINAL: export");
+                perror("conch: export");
             }
             *equals = '=';  // Restore for any further use
         } else {
@@ -207,7 +207,7 @@ int builtin_export(char **args) {
             if (value == NULL) {
                 // Set empty if doesn't exist
                 if (setenv(arg, "", 1) != 0) {
-                    perror("TERMINAL: export");
+                    perror("conch: export");
                 }
             }
         }

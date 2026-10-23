@@ -34,7 +34,7 @@ void jobs_init(void) {
         // Put ourselves in our own process group
         shell_pgid = getpid();
         if (setpgid(shell_pgid, shell_pgid) < 0) {
-            perror("TERMINAL: setpgid");
+            perror("conch: setpgid");
             exit(1);
         }
 
@@ -104,13 +104,13 @@ int job_add(pid_t pgid, const char *command, int background) {
     }
 
     if (slot == -1) {
-        fprintf(stderr, "TERMINAL: Too many jobs\n");
+        fprintf(stderr, "conch: Too many jobs\n");
         return -1;
     }
 
     job_t *job = malloc(sizeof(job_t));
     if (!job) {
-        perror("TERMINAL: malloc");
+        perror("conch: malloc");
         return -1;
     }
 
@@ -208,7 +208,7 @@ void job_foreground(job_t *job, int cont) {
     // Send SIGCONT if needed
     if (cont) {
         if (kill(-job->pgid, SIGCONT) < 0) {
-            perror("TERMINAL: kill (SIGCONT)");
+            perror("conch: kill (SIGCONT)");
         }
         job->state = JOB_RUNNING;
     }
@@ -229,7 +229,7 @@ void job_background(job_t *job, int cont) {
 
     if (cont) {
         if (kill(-job->pgid, SIGCONT) < 0) {
-            perror("TERMINAL: kill (SIGCONT)");
+            perror("conch: kill (SIGCONT)");
         }
         job->state = JOB_RUNNING;
     }

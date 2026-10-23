@@ -85,7 +85,7 @@ char *read_line(void) {
     int c;
 
     if (!buffer) {
-        fprintf(stderr, "TERMINAL: MEMORY ALLOCATION FAILED\n");
+        fprintf(stderr, "conch: MEMORY ALLOCATION FAILED\n");
         exit(EXIT_FAILURE);
     }
 
@@ -105,7 +105,7 @@ char *read_line(void) {
             buffer_size += BUFFER_SIZE;
             buffer = realloc(buffer, buffer_size);
             if (!buffer) {
-                fprintf(stderr, "TERMINAL: MEMORY REALLOCATION FAILED\n");
+                fprintf(stderr, "conch: MEMORY REALLOCATION FAILED\n");
                 exit(EXIT_FAILURE);
             }
         }
@@ -121,7 +121,7 @@ char **split_line(char *line) {
     char quote_char = '\0';
 
     if (!tokens) {
-        fprintf(stderr, "TERMINAL: TOKEN ALLOCATION FAILED\n");
+        fprintf(stderr, "conch: TOKEN ALLOCATION FAILED\n");
         exit(EXIT_FAILURE);
     }
 
@@ -165,7 +165,7 @@ char **split_line(char *line) {
             buffer_size += TOKEN_SIZE;
             tokens = realloc(tokens, buffer_size * sizeof(char*));
             if (!tokens) {
-                fprintf(stderr, "TERMINAL: TOKEN REALLOCATION FAILED\n");
+                fprintf(stderr, "conch: TOKEN REALLOCATION FAILED\n");
                 exit(EXIT_FAILURE);
             }
         }

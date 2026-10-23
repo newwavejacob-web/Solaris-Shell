@@ -59,6 +59,13 @@ int launch_process_bg(char **args, int background, const char *cmd_str) {
 
     // I/O Redirects - handle multiple redirections
     for (int i = 0; args[i] != NULL; i++) {
+        // Every redirect operator needs a filename after it
+        if ((strcmp(args[i], "2>") == 0 || strcmp(args[i], ">") == 0 ||
+             strcmp(args[i], ">>") == 0 || strcmp(args[i], "<") == 0) &&
+            args[i + 1] == NULL) {
+            fprintf(stderr, "conch: syntax error: missing filename after '%s'\n", args[i]);
+            return 1;
+        }
         // stderr redirect 2>
         if (strcmp(args[i], "2>") == 0) {
             redirect_err = 1;
@@ -134,7 +141,7 @@ int launch_process_bg(char **args, int background, const char *cmd_str) {
             int flags = O_WRONLY | O_CREAT | (append_out ? O_APPEND : O_TRUNC);
             int fd = open(out_file, flags, 0644);
             if (fd == -1) {
-                perror("TERMINAL: OPEN");
+                perror("conch: OPEN");
                 exit(EXIT_FAILURE);
             }
             dup2(fd, STDOUT_FILENO);
@@ -145,7 +152,7 @@ int launch_process_bg(char **args, int background, const char *cmd_str) {
         if (redirect_in == 1 && in_file) {
             int fd = open(in_file, O_RDONLY);
             if (fd == -1) {
-                perror("TERMINAL: OPEN");
+                perror("conch: OPEN");
                 exit(EXIT_FAILURE);
             }
             dup2(fd, STDIN_FILENO);
@@ -156,7 +163,7 @@ int launch_process_bg(char **args, int background, const char *cmd_str) {
         if (redirect_err == 1 && err_file) {
             int fd = open(err_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
             if (fd == -1) {
-                perror("TERMINAL: OPEN");
+                perror("conch: OPEN");
                 exit(EXIT_FAILURE);
             }
             dup2(fd, STDERR_FILENO);
@@ -164,11 +171,11 @@ int launch_process_bg(char **args, int background, const char *cmd_str) {
         }
 
         if (execvp(args[0], args) == -1) {
-            perror("TERMINAL: COMMAND NOT FOUND");
+            perror("conch: COMMAND NOT FOUND");
             exit(EXIT_FAILURE);
         }
     } else if (pid < 0) {
-        perror("TERMINAL: FORK");
+        perror("conch: FORK");
     } else {
         // Parent process
         setpgid(pid, pid);  // Ensure child is in its own process group

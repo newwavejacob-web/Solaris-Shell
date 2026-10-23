@@ -50,7 +50,7 @@ char *read_line_advanced(void) {
     char c;
 
     if (!buffer) {
-        fprintf(stderr, "TERMINAL: MEMORY ALLOCATION FAILED\n");
+        fprintf(stderr, "conch: MEMORY ALLOCATION FAILED\n");
         exit(EXIT_FAILURE);
     }
 
@@ -177,7 +177,7 @@ char *read_line_advanced(void) {
                 buffer_size += BUFFER_SIZE;
                 buffer = realloc(buffer, buffer_size);
                 if (!buffer) {
-                    fprintf(stderr, "TERMINAL: MEMORY REALLOCATION FAILED\n");
+                    fprintf(stderr, "conch: MEMORY REALLOCATION FAILED\n");
                     exit(EXIT_FAILURE);
                 }
             }
@@ -187,8 +187,13 @@ char *read_line_advanced(void) {
         }
     }
 
-    buffer[position] = '\0';
+    // read() hit EOF (e.g. piped input ran out)
     disable_raw_mode();
+    if (position == 0) {
+        free(buffer);
+        return NULL;
+    }
+    buffer[position] = '\0';
     return buffer;
 }
 
@@ -213,7 +218,7 @@ int main(void) {
 
         if (line == NULL) {
             // EOF (Ctrl+D)
-            printf(GREEN "TERMINAL SESSION TERMINATED\n" RESET);
+            printf(GREEN "CONCH SESSION TERMINATED\n" RESET);
             break;
         }
 

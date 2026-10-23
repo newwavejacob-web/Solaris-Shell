@@ -100,7 +100,8 @@ static void get_file_completions(const char *prefix) {
         }
 
         if (strncmp(entry->d_name, file_prefix, prefix_len) == 0) {
-            char full_match[1024];
+            // dir + "/" + name (d_name <= 255) + trailing "/" for dirs + NUL
+            char full_match[sizeof(dir_path) + 1 + 255 + 1 + 1];
             if (strcmp(dir_path, ".") == 0) {
                 snprintf(full_match, sizeof(full_match), "%s", entry->d_name);
             } else {

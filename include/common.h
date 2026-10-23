@@ -11,6 +11,9 @@
 #include <signal.h>
 #include <errno.h>
 
+// Version reported by the status builtin
+#define CONCH_VERSION "3.0"
+
 // Buffer sizes
 #define BUFFER_SIZE 1024
 #define TOKEN_SIZE 64
